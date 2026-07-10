@@ -1,0 +1,18 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 作业
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -e ".[dev,validators]"
+      - name: Run tests
+        run: python -m pytest tests/ -v
