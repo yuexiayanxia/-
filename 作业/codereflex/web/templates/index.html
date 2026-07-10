@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>CodeReflex</title>
+    <style>
+        body { font-family: monospace; max-width: 900px; margin: 2em auto; padding: 0 1em; }
+        #stream { white-space: pre-wrap; background: #f4f4f4; padding: 1em; border-radius: 6px; min-height: 300px; }
+        .hitl { background: #fff3cd; padding: 1em; border-radius: 6px; margin: 0.5em 0; }
+        button { padding: 0.5em 1em; margin: 0.25em; }
+    </style>
+</head>
+<body>
+    <h1>CodeReflex</h1>
+    <p>Feedback-loop-centric coding agent harness</p>
+    <form id="task-form">
+        <textarea name="task" rows="3" placeholder="Describe the coding task..." style="width:100%"></textarea>
+        <button type="submit">Submit Task</button>
+    </form>
+    <div id="stream"></div>
+    <script>
+        const form = document.getElementById('task-form');
+        const stream = document.getElementById('stream');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const task = new FormData(form).get('task');
+            stream.innerHTML = '';
+            await fetch('/submit', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({task})});
+            const es = new EventSource('/stream');
+            es.onmessage = (ev) => {
+                stream.textContent += ev.data + '\n';
+            };
+        });
+    </script>
+</body>
+</html>
